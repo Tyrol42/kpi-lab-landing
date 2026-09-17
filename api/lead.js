@@ -78,9 +78,13 @@ ${utmSection}
 ⏰ <b>Время заявки:</b> ${time}`;
 
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
-    const chatId = process.env.TELEGRAM_CHAT_ID;
+    const rawChatId = process.env.TELEGRAM_CHAT_ID || '';
+    const chatIds = rawChatId
+      .split(',')
+      .map(id => id.trim())
+      .filter(Boolean);
 
-    if (!botToken || !chatId || botToken === 'your_bot_token_here' || chatId === 'your_chat_id_here') {
+    if (!botToken || chatIds.length === 0 || botToken === 'your_bot_token_here') {
       console.log('Заявка принята (MOCK):', message);
       return res.status(200).json({
         success: true,
@@ -90,19 +94,33 @@ ${utmSection}
     }
 
     const tgUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
-    const tgRes = await fetch(tgUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: message,
-        parse_mode: 'HTML'
+    const sendResults = await Promise.all(
+      chatIds.map(async (targetChatId) => {
+        try {
+          const tgRes = await fetch(tgUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: targetChatId,
+              text: message,
+              parse_mode: 'HTML'
+            })
+          });
+          const tgData = await tgRes.json();
+          return { chatId: targetChatId, ok: tgData.ok, description: tgData.description };
+        } catch (err) {
+          return { chatId: targetChatId, ok: false, description: err.message };
+        }
       })
-    });
+    );
 
-    const tgData = await tgRes.json();
-    if (!tgData.ok) {
-      return res.status(500).json({ success: false, error: tgData.description });
+    const failures = sendResults.filter(r => !r.ok);
+    if (failures.length === sendResults.length) {
+      return res.status(500).json({
+        success: false,
+        error: 'Ошибка доставки Telegram',
+        details: failures.map(f => `${f.chatId}: ${f.description}`).join('; ')
+      });
     }
 
     return res.status(200).json({

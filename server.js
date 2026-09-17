@@ -97,10 +97,14 @@ app.post('/api/lead', async (req, res) => {
     });
 
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
-    const chatId = process.env.TELEGRAM_CHAT_ID;
+    const rawChatId = process.env.TELEGRAM_CHAT_ID || '';
+    const chatIds = rawChatId
+      .split(',')
+      .map(id => id.trim())
+      .filter(Boolean);
 
     // Если токен или чат ID не указаны — запускаем безопасный mock-режим с подробным выводом в консоль
-    if (!botToken || !chatId || botToken === 'your_bot_token_here' || chatId === 'your_chat_id_here') {
+    if (!botToken || chatIds.length === 0 || botToken === 'your_bot_token_here') {
       console.log('\n================== 📥 [НОВАЯ ЗАЯВКА / MOCK-РЕЖИМ] ==================');
       console.log('Бот Telegram не настроен в .env, заявка зафиксирована на сервере:');
       console.log(message.replace(/<[^>]*>?/gm, '')); // чистим HTML теги для консоли
@@ -113,30 +117,39 @@ app.post('/api/lead', async (req, res) => {
       });
     }
 
-    // Реальная отправка в Telegram через Bot API
+    // Реальная отправка в Telegram через Bot API (рассылка по всем Chat ID)
     const tgUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
-    const tgResponse = await fetch(tgUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: message,
-        parse_mode: 'HTML'
+    const sendResults = await Promise.all(
+      chatIds.map(async (targetChatId) => {
+        try {
+          const tgResponse = await fetch(tgUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: targetChatId,
+              text: message,
+              parse_mode: 'HTML'
+            })
+          });
+          const data = await tgResponse.json();
+          return { chatId: targetChatId, ok: data.ok, description: data.description };
+        } catch (err) {
+          return { chatId: targetChatId, ok: false, description: err.message };
+        }
       })
-    });
+    );
 
-    const tgData = await tgResponse.json();
-
-    if (!tgData.ok) {
-      console.error('Ошибка Telegram Bot API:', tgData);
+    const failures = sendResults.filter(r => !r.ok);
+    if (failures.length === sendResults.length) {
+      console.error('Ошибка отправки во все Telegram чаты:', failures);
       return res.status(500).json({
         success: false,
-        error: 'Ошибка при доставке уведомления в Telegram',
-        details: tgData.description
+        error: 'Не удалось доставить сообщение в Telegram',
+        details: failures.map(f => `${f.chatId}: ${f.description}`).join('; ')
       });
     }
 
-    console.log(`[OK] Заявка от ${name} (${phone}) успешно доставлена в Telegram chat_id: ${chatId}`);
+    console.log(`[OK] Заявка от ${name} (${phone}) успешно доставлена в Telegram чаты:`, sendResults.filter(r => r.ok).map(r => r.chatId).join(', '));
 
     return res.json({
       success: true,
