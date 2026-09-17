@@ -1,35 +1,33 @@
 /* ==========================================================================
-   KPI LAB - Стили лендинга «Продвижение поведенческими факторами»
-   Фирменная палитра: #005FAB (синий), #fafbfe (фон), #0f172a (текст)
+   KPI LAB - Точная стилистика основного сайта kpi-lab.ru
+   - Острые углы (border-radius: 0) у ВСЕХ кнопок, карточек, инпутов и элементов
+   - Фирменный синий фон подвала #005FAB с белым логотипом
+   - Ширина макета: container max-width: 1210px
+   - Фирменная точка после заголовков h2::after (7px x 7px #005FAB)
    ========================================================================== */
 
 :root {
   --primary: #005FAB;
-  --primary-hover: #004a87;
-  --primary-light: #e6f0fa;
-  --primary-gradient: linear-gradient(135deg, #005FAB 0%, #0284c7 100%);
-  --accent-green: #10b981;
-  --accent-orange: #f59e0b;
-  --accent-red: #ef4444;
+  --primary-hover: #004680;
+  --primary-light: #eef6fc;
   --bg-main: #fafbfe;
   --bg-card: #ffffff;
-  --text-main: #1e293b;
-  --text-muted: #64748b;
-  --text-dark: #0f172a;
+  --text-main: #2b2b2b;
+  --text-dark: #000000;
+  --text-muted: #6b7280;
   --border-color: #e2e8f0;
-  --shadow-sm: 0 2px 4px rgba(0, 95, 171, 0.04);
-  --shadow-md: 0 10px 25px -5px rgba(0, 95, 171, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 20px 35px -10px rgba(0, 95, 171, 0.15);
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --border-dark: #cbd5e1;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --transition: all 0.25s ease;
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* Строго острые углы по всей дизайн-системе KPI LAB */
+  border-radius: 0 !important;
 }
 
 html {
@@ -38,7 +36,7 @@ html {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Lato", "Helvetica Neue", Arial, sans-serif;
   background-color: var(--bg-main);
   color: var(--text-main);
   line-height: 1.6;
@@ -46,10 +44,14 @@ body {
   overflow-x: hidden;
 }
 
+/* --------------------------------------------------------------------------
+   Контейнер и ширина макета (1210px, как на kpi-lab.ru)
+   -------------------------------------------------------------------------- */
 .container {
-  max-width: 1200px;
+  max-width: 1210px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 15px;
+  width: 100%;
 }
 
 /* --------------------------------------------------------------------------
@@ -61,89 +63,101 @@ h1, h2, h3, h4 {
   line-height: 1.25;
 }
 
+/* Фирменная квадратная точка KPI LAB после заголовков */
+.section-title {
+  font-size: 2.25rem;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+  color: var(--primary);
+  display: inline-block;
+}
+
+.section-title::after {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
 .section-tag {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 16px;
+  padding: 6px 14px;
   background-color: var(--primary-light);
+  border: 1px solid var(--primary);
   color: var(--primary);
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-radius: 9999px;
+  letter-spacing: 0.06em;
   margin-bottom: 16px;
 }
 
 .section-tag::before {
   content: "";
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background: var(--primary);
-  border-radius: 50%;
 }
 
 .section-header {
   text-align: center;
-  max-width: 760px;
-  margin: 0 auto 56px auto;
-}
-
-.section-title {
-  font-size: 2.25rem;
-  margin-bottom: 16px;
-  letter-spacing: -0.02em;
+  max-width: 800px;
+  margin: 0 auto 50px auto;
 }
 
 .section-subtitle {
   color: var(--text-muted);
-  font-size: 1.125rem;
+  font-size: 1.1rem;
 }
 
 /* --------------------------------------------------------------------------
-   Кнопки
+   Кнопки (Острые углы, шрифт bold, фирменный стиль KPI LAB)
    -------------------------------------------------------------------------- */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 14px 32px;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: var(--radius-sm);
+  padding: 15px 32px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   text-decoration: none;
   cursor: pointer;
-  border: 2px solid transparent;
+  border: 2px solid var(--primary);
   transition: var(--transition);
 }
 
 .btn-primary {
-  background: var(--primary-gradient);
+  background: var(--primary);
   color: #ffffff;
-  box-shadow: 0 8px 20px -4px rgba(0, 95, 171, 0.35);
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px -4px rgba(0, 95, 171, 0.45);
+  background: transparent;
+  color: var(--primary);
 }
 
 .btn-secondary {
-  background: #ffffff;
+  background: transparent;
   color: var(--primary);
-  border-color: var(--border-color);
+  border-color: var(--primary);
 }
 
 .btn-secondary:hover {
-  border-color: var(--primary);
-  background: var(--primary-light);
+  background: var(--primary);
+  color: #ffffff;
 }
 
 .btn-sm {
-  padding: 8px 18px;
-  font-size: 0.875rem;
+  padding: 10px 22px;
+  font-size: 0.82rem;
 }
 
 .btn-block {
@@ -151,16 +165,15 @@ h1, h2, h3, h4 {
 }
 
 /* --------------------------------------------------------------------------
-   Хедер
+   Шапка (Header) - фон #fafbfe, ширина 1210px, острые элементы
    -------------------------------------------------------------------------- */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(12px);
+  background: #fafbfe;
   border-bottom: 1px solid var(--border-color);
-  padding: 16px 0;
+  padding: 20px 0;
 }
 
 .header-container {
@@ -177,11 +190,11 @@ h1, h2, h3, h4 {
 }
 
 .logo:hover {
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
 .logo-img {
-  height: 42px;
+  height: 44px;
   width: auto;
   max-width: 190px;
   object-fit: contain;
@@ -191,7 +204,7 @@ h1, h2, h3, h4 {
 .header-contacts {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 28px;
 }
 
 .header-phone-box {
@@ -201,9 +214,9 @@ h1, h2, h3, h4 {
 }
 
 .header-phone {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--text-dark);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #000000;
   text-decoration: none;
   transition: var(--transition);
 }
@@ -226,42 +239,38 @@ h1, h2, h3, h4 {
   width: 6px;
   height: 6px;
   background: var(--accent-green);
-  border-radius: 50%;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
 }
 
 /* --------------------------------------------------------------------------
    Hero-секция
    -------------------------------------------------------------------------- */
 .hero-section {
-  padding: 80px 0 60px 0;
+  padding: 70px 0 60px 0;
   position: relative;
 }
 
 .hero-grid {
   display: grid;
   grid-template-columns: 1.15fr 0.85fr;
-  gap: 48px;
+  gap: 40px;
   align-items: center;
 }
 
 .hero-title {
-  font-size: 3.1rem;
-  letter-spacing: -0.03em;
+  font-size: 3rem;
+  letter-spacing: -0.02em;
   margin-bottom: 20px;
+  color: #000;
 }
 
 .hero-title span {
   color: var(--primary);
-  background: linear-gradient(135deg, #005FAB 0%, #0ea5e9 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 .hero-subtitle {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   color: var(--text-muted);
-  margin-bottom: 32px;
+  margin-bottom: 30px;
   line-height: 1.6;
 }
 
@@ -278,12 +287,10 @@ h1, h2, h3, h4 {
   gap: 8px;
   background: #ffffff;
   padding: 8px 16px;
-  border-radius: 9999px;
-  border: 1px solid var(--border-color);
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-dark);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-dark);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #000;
 }
 
 .hero-badge-item svg {
@@ -293,25 +300,25 @@ h1, h2, h3, h4 {
 .hero-cta-box {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
 }
 
 .hero-guarantee {
   font-size: 0.85rem;
   color: var(--text-muted);
+  max-width: 200px;
+  line-height: 1.4;
 }
 
-/* Hero карточка с инфографикой */
+/* Hero карточка */
 .hero-visual {
   position: relative;
 }
 
 .hero-stats-card {
   background: #ffffff;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
+  border: 2px solid var(--border-color);
   padding: 32px;
-  box-shadow: var(--shadow-lg);
   position: relative;
 }
 
@@ -325,30 +332,31 @@ h1, h2, h3, h4 {
 }
 
 .stats-badge {
-  background: rgba(16, 185, 129, 0.1);
+  background: #e6fcf5;
   color: var(--accent-green);
-  font-weight: 700;
-  font-size: 0.8rem;
-  padding: 4px 10px;
-  border-radius: 9999px;
+  font-weight: 800;
+  font-size: 0.82rem;
+  padding: 6px 12px;
+  border: 1px solid var(--accent-green);
+  text-transform: uppercase;
 }
 
 .metric-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .metric-name {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   color: var(--text-muted);
 }
 
 .metric-val {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text-dark);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #000;
 }
 
 .metric-val.green {
@@ -357,24 +365,22 @@ h1, h2, h3, h4 {
 
 .progress-bar {
   width: 100%;
-  height: 8px;
+  height: 6px;
   background: #f1f5f9;
-  border-radius: 9999px;
   overflow: hidden;
-  margin-top: 6px;
+  margin-bottom: 16px;
 }
 
 .progress-fill {
   height: 100%;
-  border-radius: 9999px;
-  background: var(--primary-gradient);
+  background: var(--primary);
 }
 
 /* --------------------------------------------------------------------------
    Блок «Как работают ПФ»
    -------------------------------------------------------------------------- */
 .section-features {
-  padding: 90px 0;
+  padding: 80px 0;
   background: #ffffff;
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
@@ -383,29 +389,27 @@ h1, h2, h3, h4 {
 .features-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  gap: 24px;
 }
 
 .feature-card {
   background: var(--bg-main);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 32px 28px;
+  padding: 32px 26px;
   transition: var(--transition);
   position: relative;
 }
 
 .feature-card:hover {
-  transform: translateY(-4px);
   border-color: var(--primary);
-  box-shadow: var(--shadow-md);
+  background: #ffffff;
 }
 
 .feature-icon-box {
-  width: 54px;
-  height: 54px;
-  border-radius: 12px;
+  width: 50px;
+  height: 50px;
   background: var(--primary-light);
+  border: 1px solid var(--primary);
   color: var(--primary);
   display: flex;
   align-items: center;
@@ -416,6 +420,7 @@ h1, h2, h3, h4 {
 .feature-title {
   font-size: 1.25rem;
   margin-bottom: 12px;
+  color: var(--primary);
 }
 
 .feature-desc {
@@ -428,29 +433,32 @@ h1, h2, h3, h4 {
    Блок «Этапы работы»
    -------------------------------------------------------------------------- */
 .section-steps {
-  padding: 90px 0;
+  padding: 85px 0;
 }
 
 .steps-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  gap: 20px;
 }
 
 .step-card {
   background: #ffffff;
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 28px 24px;
-  position: relative;
+  padding: 28px 20px;
+  transition: var(--transition);
+}
+
+.step-card:hover {
+  border-color: var(--primary);
 }
 
 .step-num {
   font-size: 2.5rem;
   font-weight: 900;
-  color: #e2e8f0;
+  color: var(--primary);
   line-height: 1;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .step-title {
@@ -467,41 +475,29 @@ h1, h2, h3, h4 {
    Секция с формой заявки
    -------------------------------------------------------------------------- */
 .section-form {
-  padding: 90px 0 110px 0;
-  background: linear-gradient(180deg, var(--bg-main) 0%, #edf4fc 100%);
+  padding: 85px 0 100px 0;
+  background: var(--bg-main);
   position: relative;
 }
 
 .form-wrapper {
-  max-width: 780px;
+  max-width: 820px;
   margin: 0 auto;
   background: #ffffff;
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(0, 95, 171, 0.15);
-  box-shadow: var(--shadow-lg);
+  border: 2px solid var(--primary);
   padding: 48px;
   position: relative;
-  overflow: hidden;
-}
-
-.form-wrapper::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 5px;
-  background: var(--primary-gradient);
 }
 
 .form-header {
   text-align: center;
-  margin-bottom: 36px;
+  margin-bottom: 34px;
 }
 
 .form-title {
-  font-size: 2rem;
+  font-size: 2.1rem;
   margin-bottom: 12px;
+  color: var(--primary);
 }
 
 .form-subtitle {
@@ -516,20 +512,21 @@ h1, h2, h3, h4 {
 
 .form-label {
   display: block;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-dark);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   margin-bottom: 8px;
 }
 
 .form-control {
   width: 100%;
-  padding: 14px 18px;
+  padding: 15px 18px;
   font-size: 1rem;
-  color: var(--text-dark);
+  color: #000;
   background: #ffffff;
-  border: 1.5px solid var(--border-color);
-  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-dark);
   transition: var(--transition);
   font-family: inherit;
 }
@@ -537,7 +534,7 @@ h1, h2, h3, h4 {
 .form-control:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(0, 95, 171, 0.12);
+  border-width: 2px;
 }
 
 .form-control.is-invalid {
@@ -550,7 +547,7 @@ h1, h2, h3, h4 {
   color: var(--accent-red);
   font-size: 0.825rem;
   margin-top: 6px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .form-check {
@@ -574,6 +571,7 @@ h1, h2, h3, h4 {
   accent-color: var(--primary);
   cursor: pointer;
   margin-top: 2px;
+  flex-shrink: 0;
 }
 
 .form-check-label a {
@@ -587,44 +585,40 @@ h1, h2, h3, h4 {
   align-items: center;
   gap: 16px;
   background: #ecfdf5;
-  border: 1px solid #a7f3d0;
+  border: 2px solid var(--accent-green);
   color: #065f46;
   padding: 20px;
-  border-radius: var(--radius-sm);
   margin-bottom: 24px;
 }
 
 .alert-success-icon {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   background: var(--accent-green);
   color: #fff;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
+  font-weight: 900;
   flex-shrink: 0;
 }
 
 .alert-error-box {
   display: none;
   background: #fef2f2;
-  border: 1px solid #fecaca;
+  border: 2px solid var(--accent-red);
   color: var(--accent-red);
   padding: 16px;
-  border-radius: var(--radius-sm);
   margin-bottom: 24px;
   font-size: 0.9rem;
 }
 
 .btn-loader {
   display: none;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: #fff;
-  border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
 
@@ -633,51 +627,161 @@ h1, h2, h3, h4 {
 }
 
 /* --------------------------------------------------------------------------
-   Футер
+   ПОДВАЛ (Footer) - Точная копия KPI LAB:
+   - background: #005FAB (фирменный синий)
+   - Белый логотип logo-white.svg
+   - Белый текст и ссылки
+   - Острая кнопка с белой рамкой
    -------------------------------------------------------------------------- */
 .site-footer {
-  background: #0f172a;
-  color: #94a3b8;
-  padding: 48px 0;
-  font-size: 0.9rem;
+  background: var(--primary);
+  color: #ffffff;
+  padding: 80px 0 50px 0;
+  position: relative;
 }
 
 .footer-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1.2fr 1.3fr 1fr;
+  gap: 40px;
+  align-items: start;
 }
 
-.footer-brand-box {
+.footer-left {
   display: flex;
   flex-direction: column;
-  gap: 8px;
 }
 
 .footer-logo {
   display: inline-block;
-  line-height: 0;
-}
-
-.footer-logo-img {
-  height: 38px;
-  width: auto;
-  background: #ffffff;
-  padding: 5px 12px;
-  border-radius: var(--radius-sm);
-  display: inline-block;
-  object-fit: contain;
+  margin-bottom: 20px;
   transition: var(--transition);
 }
 
-.footer-logo-img:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+.footer-logo:hover {
+  opacity: 0.85;
+}
+
+.footer-logo-img {
+  height: 28px;
+  width: auto;
+  display: block;
+}
+
+.footer-adds {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 12px;
+  line-height: 1.5;
 }
 
 .footer-copy {
   font-size: 0.82rem;
-  color: #94a3b8;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 10px;
+}
+
+.footer-middle {
+  padding: 0 10px;
+}
+
+.footer-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 18px;
+  color: #ffffff;
+}
+
+.footer-menu {
+  list-style: none;
+}
+
+.footer-menu li {
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.footer-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.footer-contact-item {
+  margin-bottom: 10px;
+}
+
+.footer-phone {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-decoration: none;
+  display: inline-block;
+  transition: var(--transition);
+}
+
+.footer-phone:hover {
+  opacity: 0.85;
+}
+
+.footer-mail {
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  display: inline-block;
+  transition: var(--transition);
+}
+
+.footer-mail:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.btn-footer {
+  margin-top: 18px;
+  background: transparent;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  padding: 13px 28px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-footer:hover {
+  background: #ffffff;
+  color: var(--primary);
+}
+
+.footer-bottom {
+  margin-top: 50px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+}
+
+.footer-links a {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.footer-links a:hover {
+  color: #ffffff;
+  text-decoration: underline;
 }
 
 /* --------------------------------------------------------------------------
@@ -690,8 +794,7 @@ h1, h2, h3, h4 {
   z-index: 9999;
   background: #ffffff;
   border: 2px solid var(--primary);
-  border-radius: var(--radius-md);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
   width: 360px;
   max-width: calc(100vw - 40px);
   font-size: 0.85rem;
@@ -715,8 +818,6 @@ h1, h2, h3, h4 {
   width: 8px;
   height: 8px;
   background: var(--accent-green);
-  border-radius: 50%;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.4);
   margin-right: 8px;
 }
 
@@ -751,7 +852,7 @@ h1, h2, h3, h4 {
 }
 
 .debug-val {
-  font-weight: 600;
+  font-weight: 700;
   text-align: right;
 }
 
@@ -768,23 +869,23 @@ h1, h2, h3, h4 {
 .badge-success {
   background: #dcfce7;
   color: #166534;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 3px 6px;
   font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid var(--accent-green);
 }
 
 .badge-gray {
   background: #f1f5f9;
   color: #475569;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 3px 6px;
   font-size: 0.75rem;
+  border: 1px solid var(--border-dark);
 }
 
 .debug-utm-list {
   background: #f8fafc;
   border: 1px dashed #cbd5e1;
-  border-radius: 6px;
   padding: 8px;
   margin: 8px 0;
   font-size: 0.8rem;
@@ -818,12 +919,13 @@ h1, h2, h3, h4 {
   display: block;
   text-align: center;
   background: var(--primary-light);
+  border: 1px solid var(--primary);
   color: var(--primary);
-  padding: 6px 10px;
-  border-radius: 6px;
+  padding: 8px 10px;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.8rem;
+  text-transform: uppercase;
   transition: var(--transition);
 }
 
@@ -847,6 +949,11 @@ h1, h2, h3, h4 {
 
   .steps-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
   }
 }
 
@@ -872,12 +979,16 @@ h1, h2, h3, h4 {
   }
 
   .form-wrapper {
-    padding: 28px 20px;
+    padding: 28px 18px;
   }
 
   .footer-container {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .footer-links {
     flex-direction: column;
-    text-align: center;
-    gap: 16px;
+    gap: 12px;
   }
 }
