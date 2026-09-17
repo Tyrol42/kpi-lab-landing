@@ -172,48 +172,20 @@ h1, h2, h3, h4 {
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
   text-decoration: none;
+  transition: var(--transition);
 }
 
-.logo-symbol {
-  width: 42px;
+.logo:hover {
+  opacity: 0.9;
+}
+
+.logo-img {
   height: 42px;
-  background: var(--primary-gradient);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-weight: 900;
-  font-size: 1.15rem;
-  letter-spacing: -0.05em;
-  box-shadow: var(--shadow-sm);
-}
-
-.logo-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.logo-brand {
-  font-size: 1.35rem;
-  font-weight: 900;
-  letter-spacing: 0.02em;
-  color: var(--text-dark);
-  line-height: 1;
-}
-
-.logo-brand span {
-  color: var(--primary);
-}
-
-.logo-desc {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-top: 3px;
+  width: auto;
+  max-width: 190px;
+  object-fit: contain;
+  display: block;
 }
 
 .header-contacts {
@@ -676,19 +648,36 @@ h1, h2, h3, h4 {
   justify-content: space-between;
 }
 
-.footer-logo-brand {
-  color: #ffffff;
-  font-weight: 800;
-  font-size: 1.25rem;
+.footer-brand-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.footer-logo-brand span {
-  color: #38bdf8;
+.footer-logo {
+  display: inline-block;
+  line-height: 0;
+}
+
+.footer-logo-img {
+  height: 38px;
+  width: auto;
+  background: #ffffff;
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+  object-fit: contain;
+  transition: var(--transition);
+}
+
+.footer-logo-img:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
 }
 
 .footer-copy {
-  margin-top: 6px;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
+  color: #94a3b8;
 }
 
 /* --------------------------------------------------------------------------
