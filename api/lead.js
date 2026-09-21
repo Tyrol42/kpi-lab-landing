@@ -19,7 +19,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { name, phone, site, source, utm = {}, referrer, device, rawUrl } = req.body || {};
+    const { name, phone, site, serviceGoal, calculatorData, source, utm = {}, referrer, device, rawUrl } = req.body || {};
 
     if (!name || typeof name !== 'string' || name.trim().length < 2) {
       return res.status(400).json({ success: false, error: 'Пожалуйста, укажите корректное имя' });
@@ -62,12 +62,25 @@ export default async function handler(req, res) {
       ? `🏷 <b>UTM-метки:</b>\n${utmList.join('\n')}` 
       : '🏷 <b>UTM-метки:</b> отсутствуют';
 
+    let calcSection = '';
+    if (calculatorData) {
+      calcSection = `\n🧮 <b>Параметры из калькулятора:</b>\n` +
+        `• Ниша: ${escapeHtml(calculatorData.nicheName)}\n` +
+        `• Объем: ${escapeHtml(calculatorData.keywordsCount)} фраз (${escapeHtml(calculatorData.positionState)})\n` +
+        `• Прогноз срока: ${escapeHtml(calculatorData.daysRange)}\n` +
+        `• Прирост трафика: ${escapeHtml(calculatorData.forecastTraffic)}\n` +
+        `• Экономия на Директе: ${escapeHtml(calculatorData.estimatedSavings)}\n` +
+        `• Ориентир бюджета: ${escapeHtml(calculatorData.estimatedPrice)}\n`;
+    }
+
     const message = `🔥 <b>НОВАЯ ЗАЯВКА С ЛЕНДИНГА KPI LAB</b>
 ───────────────
+🎯 <b>Цель обращения:</b> <b>${escapeHtml(serviceGoal || 'Заявка на расчет и аудит')}</b>
+
 👤 <b>Имя:</b> ${escapeHtml(name.trim())}
 📞 <b>Телефон:</b> ${escapeHtml(phone.trim())}
 🌐 <b>Сайт/Проект:</b> ${escapeHtml((site || '').trim() || 'не указан')}
-
+${calcSection}
 📊 <b>Источник перехода:</b>
 <b>${escapeHtml(source || 'Не определен')}</b>
 

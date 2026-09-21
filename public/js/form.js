@@ -1,25 +1,16 @@
 /**
- * KPI LAB - Валидация формы, маска телефона, AJAX-отправка и инспектор проверки
+ * KPI LAB - Валидация формы, маска телефона, AJAX-отправка, модальные окна и FAQ аккордеон
  */
 document.addEventListener('DOMContentLoaded', () => {
   'use strict';
 
-  const form = document.getElementById('lead-form');
-  const nameInput = document.getElementById('client-name');
-  const phoneInput = document.getElementById('client-phone');
-  const siteInput = document.getElementById('client-site');
-  const agreeCheckbox = document.getElementById('policy-agree');
-  const submitBtn = document.getElementById('submit-btn');
-  const submitBtnText = submitBtn ? submitBtn.querySelector('.btn-text') : null;
-  const submitBtnLoader = submitBtn ? submitBtn.querySelector('.btn-loader') : null;
-  const formSuccessAlert = document.getElementById('form-success');
-  const formErrorAlert = document.getElementById('form-error');
-
   // 1. МАСКА НОМЕРА ТЕЛЕФОНА (+7 (XXX) XXX-XX-XX)
-  if (phoneInput) {
-    phoneInput.addEventListener('input', onPhoneInput);
-    phoneInput.addEventListener('keydown', onPhoneKeyDown);
-    phoneInput.addEventListener('paste', onPhonePaste);
+  function setupPhoneMask(input) {
+    if (!input) return;
+
+    input.addEventListener('input', onPhoneInput);
+    input.addEventListener('keydown', onPhoneKeyDown);
+    input.addEventListener('paste', onPhonePaste);
   }
 
   function getDigitsOnly(str) {
@@ -37,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (input.value.length !== selectionStart) {
-      // Редактирование в середине строки
       if (e.data && /\D/g.test(e.data)) {
         input.value = inputNumbersValue;
       }
@@ -62,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
         formattedInputValue += '-' + inputNumbersValue.substring(9, 11);
       }
     } else {
-      // Иностранный номер
       formattedInputValue = '+' + inputNumbersValue.substring(0, 16);
     }
     input.value = formattedInputValue;
@@ -87,14 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 2. ОЧИСТКА ОШИБОК ПРИ ВВОДЕ
-  const inputsToClear = [nameInput, phoneInput, siteInput, agreeCheckbox];
-  inputsToClear.forEach(inp => {
-    if (!inp) return;
-    inp.addEventListener('input', () => clearFieldError(inp));
-    inp.addEventListener('change', () => clearFieldError(inp));
-  });
+  // Применяем маску ко всем полям телефона на странице
+  document.querySelectorAll('input[type="tel"]').forEach(setupPhoneMask);
 
+  // 2. ВАЛИДАЦИЯ И ОБРАБОТКА ОШИБОК
   function clearFieldError(input) {
     input.classList.remove('is-invalid');
     const group = input.closest('.form-group') || input.closest('.form-check');
@@ -119,33 +104,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 3. ВАЛИДАЦИЯ ФОРМЫ
-  function validateForm() {
+  function setupInputClearEvents(formEl) {
+    formEl.querySelectorAll('input, select').forEach(inp => {
+      inp.addEventListener('input', () => clearFieldError(inp));
+      inp.addEventListener('change', () => clearFieldError(inp));
+    });
+  }
+
+  function validateFormElements(formEl) {
     let isValid = true;
     let firstInvalid = null;
 
-    // Валидация имени
-    const nameVal = nameInput ? nameInput.value.trim() : '';
-    if (!nameVal || nameVal.length < 2) {
-      setFieldError(nameInput, 'Пожалуйста, введите ваше имя (минимум 2 буквы)');
-      isValid = false;
-      if (!firstInvalid) firstInvalid = nameInput;
-    } else {
-      clearFieldError(nameInput);
+    const nameInput = formEl.querySelector('input[name="name"]') || formEl.querySelector('#client-name');
+    const phoneInput = formEl.querySelector('input[name="phone"]') || formEl.querySelector('#client-phone');
+    const agreeCheckbox = formEl.querySelector('input[type="checkbox"]');
+
+    if (nameInput) {
+      const nameVal = nameInput.value.trim();
+      if (!nameVal || nameVal.length < 2) {
+        setFieldError(nameInput, 'Пожалуйста, введите ваше имя (минимум 2 буквы)');
+        isValid = false;
+        if (!firstInvalid) firstInvalid = nameInput;
+      } else {
+        clearFieldError(nameInput);
+      }
     }
 
-    // Валидация телефона
-    const phoneVal = phoneInput ? phoneInput.value.trim() : '';
-    const digits = getDigitsOnly(phoneVal);
-    if (!digits || digits.length < 11) {
-      setFieldError(phoneInput, 'Пожалуйста, укажите полный номер телефона');
-      isValid = false;
-      if (!firstInvalid) firstInvalid = phoneInput;
-    } else {
-      clearFieldError(phoneInput);
+    if (phoneInput) {
+      const digits = getDigitsOnly(phoneInput.value.trim());
+      if (!digits || digits.length < 11) {
+        setFieldError(phoneInput, 'Пожалуйста, укажите полный номер телефона');
+        isValid = false;
+        if (!firstInvalid) firstInvalid = phoneInput;
+      } else {
+        clearFieldError(phoneInput);
+      }
     }
 
-    // Валидация чекбокса политики
     if (agreeCheckbox && !agreeCheckbox.checked) {
       setFieldError(agreeCheckbox, 'Необходимо согласие на обработку данных');
       isValid = false;
@@ -161,154 +156,209 @@ document.addEventListener('DOMContentLoaded', () => {
     return isValid;
   }
 
-  // 4. ОБРАБОТКА ОТПРАВКИ
-  if (form) {
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      // Скрываем предыдущие статусы
-      if (formSuccessAlert) formSuccessAlert.style.display = 'none';
-      if (formErrorAlert) formErrorAlert.style.display = 'none';
-
-      // Проверяем валидацию
-      if (!validateForm()) {
-        return;
-      }
-
-      // Получаем данные аналитики из трекера
-      const attribution = window.KPITracker 
-        ? window.KPITracker.getAttribution() 
-        : { source: 'Прямой заход', utm: {} };
-
-      const payload = {
-        name: nameInput.value.trim(),
-        phone: phoneInput.value.trim(),
-        site: siteInput ? siteInput.value.trim() : '',
-        source: attribution.source,
-        utm: attribution.utm || {},
-        referrer: attribution.referrer || '',
-        device: attribution.device || '',
-        rawUrl: window.location.href
-      };
-
-      // Блокируем кнопку и включаем лоадер
-      setLoadingState(true);
-
-      try {
-        const response = await fetch('/api/lead', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-          // Успех
-          form.reset();
-          if (formSuccessAlert) {
-            formSuccessAlert.style.display = 'flex';
-            formSuccessAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        } else {
-          // Ошибка от сервера
-          showFormError(data.error || 'Произошла ошибка при отправке. Попробуйте еще раз.');
-        }
-      } catch (err) {
-        console.error('Ошибка сети:', err);
-        showFormError('Не удалось связаться с сервером. Проверьте соединение.');
-      } finally {
-        setLoadingState(false);
-      }
-    });
-  }
-
-  function setLoadingState(isLoading) {
-    if (!submitBtn) return;
-    submitBtn.disabled = isLoading;
-    if (isLoading) {
-      submitBtn.classList.add('is-loading');
-      if (submitBtnText) submitBtnText.textContent = 'Отправка заявки...';
-      if (submitBtnLoader) submitBtnLoader.style.display = 'inline-block';
-    } else {
-      submitBtn.classList.remove('is-loading');
-      if (submitBtnText) submitBtnText.textContent = 'Получить расчёт и аудит';
-      if (submitBtnLoader) submitBtnLoader.style.display = 'none';
+  // 3. ОТПРАВКА ЗАЯВКИ (ГЛАВНАЯ ФОРМА И МОДАЛЬНАЯ)
+  async function submitLeadForm(formEl, options = {}) {
+    if (!validateFormElements(formEl)) {
+      return;
     }
-  }
 
-  function showFormError(msg) {
-    if (formErrorAlert) {
-      formErrorAlert.textContent = msg;
-      formErrorAlert.style.display = 'block';
-      formErrorAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    } else {
-      alert(msg);
-    }
-  }
+    const nameInput = formEl.querySelector('input[name="name"]') || formEl.querySelector('#client-name');
+    const phoneInput = formEl.querySelector('input[name="phone"]') || formEl.querySelector('#client-phone');
+    const siteInput = formEl.querySelector('input[name="site"]') || formEl.querySelector('#client-site');
+    const goalInput = formEl.querySelector('input[name="goal"]') || formEl.querySelector('#client-goal');
+    const submitBtn = formEl.querySelector('button[type="submit"]');
 
-  // 5. ДЕБАГ-ВИДЖЕТ ДЛЯ УДОБСТВА ПРОВЕРКИ ТЕСТОВОГО ЗАДАНИЯ
-  initDebugWidget();
+    const submitBtnText = submitBtn ? submitBtn.querySelector('.btn-text') : null;
+    const submitBtnLoader = submitBtn ? submitBtn.querySelector('.btn-loader') : null;
+    const originalText = submitBtnText ? submitBtnText.textContent : 'Отправить';
 
-  function initDebugWidget() {
+    // Сбор данных аналитики
     const attribution = window.KPITracker 
       ? window.KPITracker.getAttribution() 
-      : { source: 'Загрузка...', utm: {} };
+      : { source: 'Прямой заход', utm: {} };
 
-    const widget = document.createElement('div');
-    widget.className = 'debug-inspector';
-    widget.id = 'debug-inspector';
+    const payload = {
+      name: nameInput ? nameInput.value.trim() : '',
+      phone: phoneInput ? phoneInput.value.trim() : '',
+      site: siteInput ? siteInput.value.trim() : '',
+      serviceGoal: (goalInput ? goalInput.value.trim() : '') || options.defaultGoal || 'Заявка с лендинга (Консультация)',
+      calculatorData: window.lastCalcResult || null,
+      source: attribution.source,
+      utm: attribution.utm || {},
+      referrer: attribution.referrer || '',
+      device: attribution.device || '',
+      rawUrl: window.location.href
+    };
 
-    const utmCount = Object.keys(attribution.utm || {}).length;
+    // Блокируем кнопку
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.classList.add('is-loading');
+      if (submitBtnText) submitBtnText.textContent = 'Отправка...';
+      if (submitBtnLoader) submitBtnLoader.style.display = 'inline-block';
+    }
 
-    widget.innerHTML = `
-      <div class="debug-header" id="debug-toggle">
-        <div class="debug-status-dot"></div>
-        <span class="debug-title"><b>Инспектор аналитики</b> (для проверки ТЗ)</span>
-        <button type="button" class="debug-btn-toggle" aria-label="Свернуть/Развернуть">▼</button>
-      </div>
-      <div class="debug-body" id="debug-body">
-        <div class="debug-row">
-          <span class="debug-label">Определенный источник:</span>
-          <span class="debug-val debug-val-source">${attribution.source}</span>
-        </div>
-        <div class="debug-row">
-          <span class="debug-label">Наличие UTM-меток:</span>
-          <span class="debug-val">${utmCount > 0 ? `<span class="badge-success">Да (${utmCount} шт.)</span>` : '<span class="badge-gray">Нет (без меток)</span>'}</span>
-        </div>
-        ${utmCount > 0 ? `
-          <div class="debug-utm-list">
-            ${Object.entries(attribution.utm).map(([k, v]) => `<div><code>${k}</code>: <b>${v}</b></div>`).join('')}
-          </div>
-        ` : ''}
-        <div class="debug-row">
-          <span class="debug-label">Реферер:</span>
-          <span class="debug-val debug-val-sm">${document.referrer ? document.referrer : 'Прямой заход (пусто)'}</span>
-        </div>
-        <div class="debug-actions">
-          <div class="debug-actions-title">Быстрые сценарии тестирования:</div>
-          <div class="debug-btn-group">
-            <a href="?utm_source=yandex&utm_medium=cpc&utm_campaign=pf_promo&utm_content=banner_top&utm_term=prodvizhenie_pf" class="debug-link-btn">1. Тест с UTM (Директ)</a>
-            <a href="/" class="debug-link-btn">2. Тест без меток (Прямой)</a>
-          </div>
-        </div>
-      </div>
-    `;
+    try {
+      const response = await fetch('/api/lead', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
 
-    document.body.appendChild(widget);
+      const data = await response.json();
 
-    // Тоггл сворачивания виджета
-    const toggleBtn = widget.querySelector('#debug-toggle');
-    const debugBody = widget.querySelector('#debug-body');
-    const arrow = widget.querySelector('.debug-btn-toggle');
+      if (response.ok && data.success) {
+        formEl.reset();
 
-    toggleBtn.addEventListener('click', () => {
-      const isCollapsed = debugBody.style.display === 'none';
-      debugBody.style.display = isCollapsed ? 'block' : 'none';
-      arrow.textContent = isCollapsed ? '▼' : '▲';
+        if (options.isModal) {
+          closeModal();
+          showGlobalToast('Спасибо! Заявка успешно принята. Эксперт KPI LAB свяжется с вами в течение 15 минут.');
+        } else {
+          const successBox = document.getElementById('form-success');
+          if (successBox) {
+            successBox.style.display = 'flex';
+            successBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
+      } else {
+        alert(data.error || 'Произошла ошибка при отправке заявки. Пожалуйста, повторите попытку.');
+      }
+    } catch (err) {
+      console.error('Ошибка сети:', err);
+      alert('Не удалось связаться с сервером. Проверьте интернет-соединение.');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('is-loading');
+        if (submitBtnText) submitBtnText.textContent = originalText;
+        if (submitBtnLoader) submitBtnLoader.style.display = 'none';
+      }
+    }
+  }
+
+  // Привязка главной формы
+  const mainForm = document.getElementById('lead-form');
+  if (mainForm) {
+    setupInputClearEvents(mainForm);
+    mainForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      submitLeadForm(mainForm, { defaultGoal: 'Расчет стоимости и прогноз позиций' });
     });
+  }
+
+  // 4. МОДАЛЬНОЕ ОКНО БЫСТРОГО ЗАКАЗА (POPUP)
+  const modal = document.getElementById('cta-modal');
+  const modalCloseBtn = document.getElementById('modal-close-btn');
+  const modalForm = document.getElementById('modal-lead-form');
+  const modalTitle = document.getElementById('modal-title');
+  const modalGoalInput = document.getElementById('modal-client-goal');
+
+  function openModal(goalTitle, goalDescription) {
+    if (!modal) return;
+    if (modalTitle) modalTitle.textContent = goalTitle || 'Оставить заявку';
+    if (modalGoalInput) modalGoalInput.value = goalTitle || 'Заявка с сайта';
+    
+    modal.classList.add('is-active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    if (!modal) return;
+    modal.classList.remove('is-active');
+    document.body.style.overflow = '';
+  }
+
+  if (modalCloseBtn) {
+    modalCloseBtn.addEventListener('click', closeModal);
+  }
+
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+  }
+
+  // Привязка отправки модальной формы
+  if (modalForm) {
+    setupInputClearEvents(modalForm);
+    modalForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      submitLeadForm(modalForm, { isModal: true });
+    });
+  }
+
+  // Привязка кликов по кнопкам с data-cta
+  document.querySelectorAll('[data-cta]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const ctaType = btn.getAttribute('data-cta');
+      let title = 'Получить расчёт и аудит';
+
+      if (ctaType === 'forecast') {
+        title = 'Получить персональный прогноз позиций в ТОП-3';
+      } else if (ctaType === 'safety_audit') {
+        title = 'Бесплатная экспресс-проверка сайта на готовность к ПФ';
+      } else if (ctaType === 'savings') {
+        title = 'Расчет экономии бюджета относительно Яндекс Директа';
+      } else if (ctaType === 'consultation') {
+        title = '15-минутная консультация с ведущим SEO-инженером';
+      } else if (ctaType === 'case_study') {
+        title = 'Запрос детального кейса и медиаплана для вашей ниши';
+      }
+
+      openModal(title);
+    });
+  });
+
+  // 5. АККОРДЕОН FAQ (ОТВЕТЫ НА ВОПРОСЫ)
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const question = item.querySelector('.faq-question');
+    if (!question) return;
+
+    question.addEventListener('click', () => {
+      const isActive = item.classList.contains('is-open');
+      // Закрываем другие вопросы
+      document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('is-open'));
+      
+      if (!isActive) {
+        item.classList.add('is-open');
+      }
+    });
+  });
+
+  // 6. ТАБЫ КЕЙСОВ (E-commerce / Медицина / B2B)
+  const caseTabs = document.querySelectorAll('.case-tab-btn');
+  const caseCards = document.querySelectorAll('.case-card-panel');
+
+  caseTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const targetId = tab.getAttribute('data-target');
+      caseTabs.forEach(t => t.classList.remove('is-active'));
+      caseCards.forEach(c => c.classList.remove('is-active'));
+
+      tab.classList.add('is-active');
+      const targetPanel = document.getElementById(targetId);
+      if (targetPanel) targetPanel.classList.add('is-active');
+    });
+  });
+
+  // Всплывающее уведомление
+  function showGlobalToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'global-toast';
+    toast.innerHTML = `<span>✓</span> <div>${message}</div>`;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      toast.classList.add('is-visible');
+    }, 50);
+
+    setTimeout(() => {
+      toast.classList.remove('is-visible');
+      setTimeout(() => toast.remove(), 400);
+    }, 5000);
   }
 });
